@@ -1,0 +1,26 @@
+{
+	"netscalers" : [
+		{
+			"datacentre":"dc1",
+			"host":"https://dd1.company.com",
+			"username":"readonly1",
+			"password":"secret1",
+			"groups": ["group1-1","group1-2"]
+		},{
+			"datacentre":"dc2",
+			"host":"https://dd2.company.com",
+			"username":"readonly2",
+			"password":"secret2",
+			"groups": ["group2-1"]
+		}
+	],
+	"slack" : {
+		"url":"https://slack.example.com/randome/number",
+		"template": {
+			"text":"`{{.Datacentre}}` is now *{{.State}}*",
+			"username":"Sample Name",
+			"icon_url":"http://golang.org/doc/gopher/doc.png",
+			"channel":"#sample"
+		}
+	}
+}
