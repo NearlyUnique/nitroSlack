@@ -11,13 +11,14 @@ type (
 	Config struct {
 		PollInterval time.Duration `json:"pollInterval"`
 		Netscalers   []Netscaler   `json:"netscalers"`
-		Slack        struct {
-			Url      string `json:"url"`
-			Template string `json:"template"`
-			Username string `json:"username"`
-			IconUrl  string `json:"iconUrl"`
-			Channel  string `json:"channel"`
-		}
+		Slack        SlackConfig
+	}
+	SlackConfig struct {
+		Url      string `json:"url"`
+		Template string `json:"template"`
+		Username string `json:"username"`
+		IconUrl  string `json:"iconUrl"`
+		Channel  string `json:"channel"`
 	}
 	Netscaler struct {
 		Host       string   `json:"host"`

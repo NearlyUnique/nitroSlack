@@ -48,11 +48,11 @@ func main() {
 			log.Printf("\nTell Slack: %s : %s", change.ServiceName, change.State)
 
 			tmpl.Execute(&buf, change)
-			msg := config.CreateMsg(buf.String())
 
-			log.Printf(">%s", msg.Text)
+			if err := config.Slack.PostSlack(buf.String()); err != nil {
+				log.Println("Slack Post error %v", err)
+			}
 
-			msg.PostSlackMessage(config.Slack.Url)
 		}
 	}
 }

@@ -7,8 +7,7 @@ import (
 
 type NetscalerWatcher struct {
 	PollInterval time.Duration
-	config       *Config
-	latest       chan *NitroResponse
+	netscalers   []Netscaler
 	pub          chan *NitroResponse
 	store        map[string]*NitroResponse
 	stop         chan struct{}
@@ -17,15 +16,16 @@ type NetscalerWatcher struct {
 func CreateWatcher(config *Config) NetscalerWatcher {
 	return NetscalerWatcher{
 		PollInterval: time.Second * config.PollInterval,
-		config:       config,
-		latest:       make(chan *NitroResponse),
+		netscalers:   config.Netscalers,
 		store:        make(map[string]*NitroResponse),
 	}
 }
 
 func (nw *NetscalerWatcher) Run() <-chan *NitroResponse {
 	nw.stop = make(chan struct{})
-	nw.pub = make(chan *NitroResponse)
+	if nw.pub == nil {
+		nw.pub = make(chan *NitroResponse)
+	}
 
 	poll := time.Tick(nw.PollInterval)
 
@@ -35,9 +35,7 @@ func (nw *NetscalerWatcher) Run() <-chan *NitroResponse {
 			case <-nw.stop:
 				return
 			case <-poll:
-				go nw.updateNetscalerStatus()
-			case current := <-nw.latest:
-				nw.updateLatest(current)
+				go nw.getLatestState()
 			}
 		}
 	}()
@@ -47,18 +45,18 @@ func (nw *NetscalerWatcher) Run() <-chan *NitroResponse {
 func (nw *NetscalerWatcher) Stop() {
 	close(nw.stop)
 }
-func (nw *NetscalerWatcher) updateNetscalerStatus() {
-	for _, ns := range nw.config.Netscalers {
+func (nw *NetscalerWatcher) getLatestState() {
+	for _, ns := range nw.netscalers {
 		for _, group := range ns.Groups {
 			if info, err := ns.GetLbGroupInfo(group); err == nil {
-				nw.latest <- info
+				nw.publishChanges(info)
 			} else {
 				log.Printf("FAILED [%v]", err)
 			}
 		}
 	}
 }
-func (nw *NetscalerWatcher) updateLatest(current *NitroResponse) {
+func (nw *NetscalerWatcher) publishChanges(current *NitroResponse) {
 	if prev, ok := nw.store[current.ServiceName]; ok {
 		if prev.State == current.State {
 			return

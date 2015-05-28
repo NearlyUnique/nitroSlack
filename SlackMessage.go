@@ -17,17 +17,18 @@ type (
 	}
 )
 
-func (cfg *Config) CreateMsg(text string) *SlackMessage {
-	return &SlackMessage{
+func (s *SlackConfig) PostSlack(text string) error {
+	msg := SlackMessage{
 		text,
-		cfg.Slack.Username,
-		cfg.Slack.IconUrl,
-		cfg.Slack.Channel,
+		s.Username,
+		s.IconUrl,
+		s.Channel,
 	}
+	return msg.post(s.Url)
 }
-func (s *SlackMessage) PostSlackMessage(url string) error {
+func (s SlackMessage) post(url string) error {
 	if url == "debug" {
-		log.Printf("HTTP POST -> Slack\n%v\n", *s)
+		log.Printf("HTTP POST -> Slack\n%v\n", s)
 	} else {
 		jsonStr, _ := json.Marshal(&s)
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
