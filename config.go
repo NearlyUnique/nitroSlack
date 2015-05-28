@@ -4,20 +4,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 )
 
 type (
 	Config struct {
-		Netscalers []NetscalerConfig
-		Slack      struct {
-			Url      string       `json:"url"`
-			Template SlackMessage `json:"template"`
+		PollInterval time.Duration `json:"pollInterval"`
+		Netscalers   []Netscaler   `json:"netscalers"`
+		Slack        struct {
+			Url      string `json:"url"`
+			Template string `json:"template"`
+			Username string `json:"username"`
+			IconUrl  string `json:"iconUrl"`
+			Channel  string `json:"channel"`
 		}
 	}
-	NetscalerConfig struct {
-		NitroConfig
-		Groups     []string `json:"groups"`
+	Netscaler struct {
+		Host       string   `json:"host"`
+		Username   string   `json:"username"`
+		Password   string   `json:"password"`
 		Datacentre string   `json:"datacentre"`
+		Groups     []string `json:"groups"`
 	}
 )
 

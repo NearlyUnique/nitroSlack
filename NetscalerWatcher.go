@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type NitroWatcher struct {
+type NetscalerWatcher struct {
 	PollInterval time.Duration
 	config       *Config
 	latest       chan *NitroResponse
@@ -14,16 +14,16 @@ type NitroWatcher struct {
 	stop         chan struct{}
 }
 
-func CreateWatcher(config *Config) NitroWatcher {
-	return NitroWatcher{
-		PollInterval: time.Second * 15,
+func CreateWatcher(config *Config) NetscalerWatcher {
+	return NetscalerWatcher{
+		PollInterval: time.Second * config.PollInterval,
 		config:       config,
 		latest:       make(chan *NitroResponse),
 		store:        make(map[string]*NitroResponse),
 	}
 }
 
-func (nw *NitroWatcher) Run() <-chan *NitroResponse {
+func (nw *NetscalerWatcher) Run() <-chan *NitroResponse {
 	nw.stop = make(chan struct{})
 	nw.pub = make(chan *NitroResponse)
 
@@ -44,14 +44,13 @@ func (nw *NitroWatcher) Run() <-chan *NitroResponse {
 
 	return nw.pub
 }
-func (nw *NitroWatcher) Stop() {
+func (nw *NetscalerWatcher) Stop() {
 	close(nw.stop)
 }
-func (nw *NitroWatcher) updateNetscalerStatus() {
+func (nw *NetscalerWatcher) updateNetscalerStatus() {
 	for _, ns := range nw.config.Netscalers {
 		for _, group := range ns.Groups {
 			if info, err := ns.GetLbGroupInfo(group); err == nil {
-				info.Datacentre = ns.Datacentre
 				nw.latest <- info
 			} else {
 				log.Printf("FAILED [%v]", err)
@@ -59,7 +58,7 @@ func (nw *NitroWatcher) updateNetscalerStatus() {
 		}
 	}
 }
-func (nw *NitroWatcher) updateLatest(current *NitroResponse) {
+func (nw *NetscalerWatcher) updateLatest(current *NitroResponse) {
 	if prev, ok := nw.store[current.ServiceName]; ok {
 		if prev.State == current.State {
 			return

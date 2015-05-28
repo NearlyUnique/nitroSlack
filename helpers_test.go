@@ -8,13 +8,11 @@ import (
 
 func createConfig(url, group, datacentre string) Config {
 	return Config{
-		Netscalers: []NetscalerConfig{
-			NetscalerConfig{
-				NitroConfig: NitroConfig{
-					Host:     url,
-					Username: "hello",
-					Password: "world",
-				},
+		Netscalers: []Netscaler{
+			Netscaler{
+				Host:       url,
+				Username:   "hello",
+				Password:   "world",
 				Datacentre: datacentre,
 				Groups:     []string{group},
 			},

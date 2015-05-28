@@ -21,7 +21,7 @@ func init() {
 	if config, err = LoadConfig("config.json"); err != nil {
 		log.Fatalf("Error reading config.json\n%v\n", err)
 	}
-	tmpl, err = template.New("slack").Parse(config.Slack.Template.Text)
+	tmpl, err = template.New("slack").Parse(config.Slack.Template)
 	if err != nil {
 		log.Fatalf("Failed to parse template\n%v\n", err)
 	}
@@ -47,10 +47,8 @@ func main() {
 		case change := <-ch:
 			log.Printf("\nTell Slack: %s : %s", change.ServiceName, change.State)
 
-			msg := config.Slack.Template
-
 			tmpl.Execute(&buf, change)
-			msg.Text = buf.String()
+			msg := config.CreateMsg(buf.String())
 
 			log.Printf(">%s", msg.Text)
 

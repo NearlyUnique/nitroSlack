@@ -17,6 +17,14 @@ type (
 	}
 )
 
+func (cfg *Config) CreateMsg(text string) *SlackMessage {
+	return &SlackMessage{
+		text,
+		cfg.Slack.Username,
+		cfg.Slack.IconUrl,
+		cfg.Slack.Channel,
+	}
+}
 func (s *SlackMessage) PostSlackMessage(url string) error {
 	if url == "debug" {
 		log.Printf("HTTP POST -> Slack\n%v\n", *s)

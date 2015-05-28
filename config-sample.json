@@ -1,5 +1,6 @@
 {
-	"netscalers" : [
+"pollInterval": 60,
+		"netscalers" : [
 		{
 			"datacentre":"dc1",
 			"host":"https://dd1.company.com",
@@ -15,12 +16,10 @@
 		}
 	],
 	"slack" : {
-		"url":"https://slack.example.com/randome/number",
-		"template": {
-			"text":"`{{.Datacentre}}` is now *{{.State}}*",
-			"username":"Sample Name",
-			"icon_url":"http://golang.org/doc/gopher/doc.png",
-			"channel":"#sample"
-		}
+		"url":"https://slack.example.com/random/number",
+		"template": "`{{.Datacentre}}` is now *{{.State}}*",
+		"username":"Sample Name",
+		"iconUrl":"http://golang.org/doc/gopher/doc.png",
+		"channel":"#sample"
 	}
 }
