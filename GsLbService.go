@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -32,26 +31,21 @@ func (ns Netscaler) GetLbGroupInfo(group string) (*NitroResponse, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Printf("Error : %s", err)
 		return nil, err
 	}
 	req.SetBasicAuth(ns.Username, ns.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Printf("Error : %s", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Error : %s", err)
 		return nil, err
 	}
 	var detail gsLbServiceResponse
 	err = json.Unmarshal(body, &detail)
-
-	//log.Printf("RAW: %s\n", string(body))
 
 	if len(detail.GsLbService) == 1 {
 		return &NitroResponse{

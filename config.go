@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"time"
 )
@@ -30,11 +29,8 @@ type (
 )
 
 func LoadConfig(path string) (*Config, error) {
-	buf, err := ioutil.ReadFile(path)
-	if err != nil {
-		fmt.Printf("ERROR:%s", err)
-	}
 	cfg := &Config{}
+	buf, err := ioutil.ReadFile(path)
 	if err == nil {
 		err = json.Unmarshal(buf, cfg)
 	}
