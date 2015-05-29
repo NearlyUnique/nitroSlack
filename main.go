@@ -50,7 +50,7 @@ func main() {
 			tmpl.Execute(&buf, change)
 
 			if err := config.Slack.PostSlack(buf.String()); err != nil {
-				log.Println("Slack Post error %v", err)
+				log.Printf("Slack Post error %v", err)
 			}
 
 		}
