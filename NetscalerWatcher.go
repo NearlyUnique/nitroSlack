@@ -35,7 +35,7 @@ func (nw *NetscalerWatcher) Run() <-chan *NitroResponse {
 			case <-nw.stop:
 				return
 			case <-poll:
-				go nw.getLatestState()
+				nw.getLatestState()
 			}
 		}
 	}()
@@ -48,11 +48,13 @@ func (nw *NetscalerWatcher) Stop() {
 func (nw *NetscalerWatcher) getLatestState() {
 	for _, ns := range nw.netscalers {
 		for _, group := range ns.Groups {
-			if info, err := ns.GetLbGroupInfo(group); err == nil {
-				nw.publishChanges(info)
-			} else {
-				log.Printf("FAILED [%v]", err)
-			}
+			go func(group string) {
+				if info, err := ns.GetLbGroupInfo(group); err == nil {
+					go nw.publishChanges(info)
+				} else {
+					log.Printf("FAILED [%v]", err)
+				}
+			}(group)
 		}
 	}
 }

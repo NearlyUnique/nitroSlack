@@ -27,29 +27,25 @@ func (s *SlackConfig) PostSlack(text string) error {
 	return msg.post(s.Url)
 }
 func (s SlackMessage) post(url string) error {
-	if url == "debug" {
-		log.Printf("HTTP POST -> Slack\n%v\n", s)
+	jsonStr, _ := json.Marshal(&s)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+
+	if resp, err := client.Do(req); err == nil {
+		defer resp.Body.Close()
+
+		if body, err := ioutil.ReadAll(resp.Body); err != nil {
+			log.Printf("Err:%v\nBody: %s\n", err, body)
+			return err
+		}
+
 	} else {
-		jsonStr, _ := json.Marshal(&s)
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-		if err != nil {
-			return err
-		}
-		req.Header.Set("Content-Type", "application/json")
-
-		client := &http.Client{}
-
-		if resp, err := client.Do(req); err == nil {
-			defer resp.Body.Close()
-
-			if body, err := ioutil.ReadAll(resp.Body); err != nil {
-				log.Printf("Err:%v\nBody: %s\n", err, body)
-				return err
-			}
-
-		} else {
-			return err
-		}
+		return err
 	}
 	return nil
 }

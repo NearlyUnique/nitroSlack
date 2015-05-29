@@ -8,7 +8,7 @@ import (
 
 func Test_basicRequest(t *testing.T) {
 	ts := httptest.NewServer(writeJson("dataCentre1-happy.json", http.StatusOK))
-	cfg := createConfig(ts.URL, "group1", "data-centre1")
+	cfg := createConfig(ts.URL, "group1", "data-centre1", "http://slack.example.com")
 
 	resp, err := cfg.Netscalers[0].GetLbGroupInfo("data-centre1")
 

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
-func createConfig(url, group, datacentre string) Config {
+func createConfig(url, group, datacentre, slackUrl string) Config {
 	return Config{
+		PollInterval: time.Second * 1,
 		Netscalers: []Netscaler{
 			Netscaler{
 				Host:       url,
@@ -16,6 +18,13 @@ func createConfig(url, group, datacentre string) Config {
 				Datacentre: datacentre,
 				Groups:     []string{group},
 			},
+		},
+		Slack: SlackConfig{
+			Url:      slackUrl,
+			Template: "Test",
+			Username: "A bot",
+			IconUrl:  "http://image.example.com/image.png",
+			Channel:  "#random",
 		},
 	}
 }
