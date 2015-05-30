@@ -25,7 +25,6 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to parse template\n%v\n", err)
 	}
-	tmpl.Execute(os.Stderr, config)
 }
 
 func main() {
